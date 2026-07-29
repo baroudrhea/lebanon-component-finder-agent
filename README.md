@@ -2,7 +2,7 @@
 
 Homework 2 (AI Agents) - Rhea Baroud
 
-You tell it an electronics component you need, and it searches for stores in Lebanon that might sell it, checks how far the store is from you, and saves everything to a text file.
+As an CCE student, I find it hard to find specific electronics parts in Lebanon since most stores here don't have organized online inventories. So this agent does that searching for you: you tell it a component you need, and it searches for stores in Lebanon that might sell it, checks how far the store is from you, and saves everything to a text file.
 
 Built with Gemini (google-genai library) using 3 tools:
 - `search_component_stores` - searches the web for the part
@@ -25,4 +25,4 @@ python agent.py
 ```
 and type the component you're looking for when it asks.
 
-uses gemini-3-flash-preview.
+uses gemini-flash-latest.
