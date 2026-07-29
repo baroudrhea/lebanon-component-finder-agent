@@ -23,7 +23,7 @@ def search_component_stores(component_name: str) -> str:
     organized online inventory, so real answers usually come from forum
     posts, store social media, or general mentions -- not a clean catalog.
     """
-    query = f"{component_name} electronics store Lebanon Bourj Hammoud"
+    query = f"{component_name} electronics store Lebanon"
 
     try:
         results = DDGS().text(query, max_results=5)
