@@ -158,7 +158,7 @@ def run_agent(user_message: str, api_key: str) -> str:
     max_iterations = 6  # safety limit so a bad response can't loop forever
     for step in range(max_iterations):
         response = client.models.generate_content(
-            model="gemini-3-flash-preview",
+            model="gemini-flash-latest",
             contents=contents,
             config=config,
         )
