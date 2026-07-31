@@ -12,6 +12,62 @@ import json
 from datetime import datetime
 from ddgs import DDGS
 
+# =========================================================
+# PERSISTENT MEMORY -- remembers past searches across separate
+# runs of the program (long-term memory), unlike "contents" in
+# the loop below which only remembers within ONE request.
+# =========================================================
+MEMORY_FILE = "agent_memory.json"
+
+
+def load_memory() -> list:
+    """
+    Loads past search history from disk. Returns an empty list if
+    no memory file exists yet (e.g. first time running the agent).
+    """
+    if not os.path.exists(MEMORY_FILE):
+        return []
+    try:
+        with open(MEMORY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return []
+
+
+def save_memory_entry(query: str, final_answer: str) -> None:
+    """
+    Appends one search to the persistent memory file, so future
+    runs of the program (even after restarting) can reference it.
+    """
+    memory = load_memory()
+    memory.append({
+        "query": query,
+        "answer": final_answer,
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
+    })
+    # Keep only the most recent 20 entries so the file doesn't grow forever
+    memory = memory[-20:]
+    with open(MEMORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(memory, f, indent=2)
+
+
+def format_memory_for_prompt(memory: list) -> str:
+    """
+    Turns the stored memory into a short block of text that gets
+    added to the agent's instructions, so it can reference past
+    searches (e.g. "you searched for this before on [date]").
+    """
+    if not memory:
+        return "The user has no previous search history."
+
+    recent = memory[-5:]  # only include the last 5 to keep the prompt short
+    lines = ["Here is the user's recent search history:"]
+    for entry in recent:
+        lines.append(
+            f"- On {entry['timestamp']}, asked: '{entry['query']}'"
+        )
+    return "\n".join(lines)
+
 
 # =========================================================
 # TOOL 1: Web search tool -- finds stores that might sell the part
@@ -136,8 +192,14 @@ def run_agent(user_message: str, api_key: str) -> str:
     """
     client = genai.Client(api_key=api_key)
 
+    # Load persistent memory and fold it into the instructions, so the
+    # agent is aware of past searches even across separate program runs.
+    memory = load_memory()
+    memory_context = format_memory_for_prompt(memory)
+    full_instruction = f"{SYSTEM_INSTRUCTION}\n\n{memory_context}"
+
     config = types.GenerateContentConfig(
-        system_instruction=SYSTEM_INSTRUCTION,
+        system_instruction=full_instruction,
         tools=[search_component_stores, check_distance, save_summary],
         # We turn OFF automatic function calling so we can see and control
         # every step of the loop ourselves -- this makes the reason/act/
@@ -158,7 +220,7 @@ def run_agent(user_message: str, api_key: str) -> str:
     max_iterations = 6  # safety limit so a bad response can't loop forever
     for step in range(max_iterations):
         response = client.models.generate_content(
-            model="gemini-flash-latest",
+            model="gemini-flash-lite-latest",
             contents=contents,
             config=config,
         )
@@ -172,7 +234,8 @@ def run_agent(user_message: str, api_key: str) -> str:
 
         if not function_calls:
             # No tool requested -> Gemini decided it has enough to answer.
-            # This ends the loop.
+            # Save this exchange to persistent memory before returning.
+            save_memory_entry(user_message, response.text)
             return response.text
 
         # Add the model's own turn (its tool request) to the history
