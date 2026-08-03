@@ -39,3 +39,13 @@ python app.py
 it'll give you a local link (something like `http://127.0.0.1:7860`), open that in your browser and chat with it there instead.
 
 uses gemini-flash-lite-latest.
+
+## HW4 — n8n Setup
+
+### Self-hosting n8n
+
+1. Install Docker Desktop
+2. Run: 
+docker volume create n8n_data
+docker run -it --rm --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n
+3. Open http://localhost:5678 and create an owner account
