@@ -1,0 +1,30 @@
+{
+  "name": "n8n-nodes-component-finder",
+  "version": "1.0.0",
+  "description": "n8n custom node for the Lebanon Electronics Component Finder agent (Homework 4)",
+  "keywords": [
+    "n8n-community-node-package"
+  ],
+  "license": "MIT",
+  "author": "Rhea Baroud",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').copyFileSync('nodes/ComponentFinder/componentFinder.svg','dist/nodes/ComponentFinder/componentFinder.svg')\""
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/ComponentFinderApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/ComponentFinder/ComponentFinder.node.js"
+    ]
+  },
+  "devDependencies": {
+    "n8n-workflow": "^2.16.0",
+    "typescript": "^5.9.3"
+  }
+}
