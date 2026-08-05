@@ -1,0 +1,62 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        -96
+      ],
+      "id": "31dc0883-97d1-4c5a-9ba6-a03d099405e9",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "query": "LM358 op-amp"
+      },
+      "type": "CUSTOM.componentFinder",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -96
+      ],
+      "id": "21716286-ad0a-4245-8d71-d6eb6a2211de",
+      "name": "Component Finder Agent",
+      "credentials": {
+        "componentFinderApi": {
+          "id": "EqhiD3sLF3qJ7xue",
+          "name": "Component Finder Agent account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Component Finder Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d14b4da0-394c-41b7-8030-bd11b3c64aa1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c20c51b770ae0fb85047819ba8edd5e13822aa881e13b9b9d9fcc3019bd8ddf9"
+  },
+  "nodeGroups": [],
+  "id": "KvnWS2pCe5CWI6NY",
+  "tags": []
+}
