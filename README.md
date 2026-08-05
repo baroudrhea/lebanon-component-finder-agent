@@ -83,10 +83,11 @@ Note: n8n runs inside Docker, so the node can't reach the FastAPI service via lo
 
 Two workflows in `n8n-workflows/`:
 
-- **`my-workflow.json`** — Simple flow: Manual Trigger → Component Finder Agent. Shows the custom node working standalone.
-- **`component-list-search.json`** — the main one, a Project Parts/BOM Checker. Takes a list of components, checks each against Lebanese electronics availability, and if one isn't found, automatically asks the agent for a common substitute instead of just failing.
+- **`my-workflow.json`** — the simple one, just Manual Trigger → Component Finder Agent. This is basically a sanity check to show the custom node runs on its own before I built anything more complicated on top of it.
 
-Covers: Webhook trigger, HTTP Request (USD→LBP rate from api.frankfurter.app), branching (If), merge, looping (Loop Over Items), filtering, data shaping (Edit Fields + Code nodes), error handling (continue on fail), Respond to Webhook, sticky notes, and credentials stored in n8n (nothing hardcoded).
+- **`component-list-search.json`** — this is the real one. I turned it into a Project Parts/BOM Checker, so instead of searching one component at a time, you send it a whole list and it checks each part against what's available in Lebanon. If it can't find something, instead of just saying "not found," it automatically asks the agent for a common substitute.
+
+To hit all 11 required concepts, this workflow uses: a Webhook trigger (not manual), an HTTP Request to a real public API (api.frankfurter.app, for the USD→LBP rate), an If node to branch between found/not-found, a Merge node to bring both paths back together, Loop Over Items to process the list, a Filter node to drop empty results, Edit Fields + a Code node to shape the data, error handling (nodes set to continue on fail instead of crashing the whole run), Respond to Webhook to send the output back, sticky notes to keep it readable, and credentials stored properly in n8n instead of hardcoded anywhere.
 
 ### Importing and running
 
@@ -99,4 +100,4 @@ Covers: Webhook trigger, HTTP Request (USD→LBP rate from api.frankfurter.app),
 
 ### Known limitation
 
-The substitute-suggestion branch is implemented and tested, but the agent is accurate enough that it rarely hits its true failure case during normal testing — so this is documented honestly here rather than forced/faked.
+I built and tested the substitute-suggestion branch, but honestly the agent is good enough that it rarely hits its true failure case — so instead of faking a failure just to show it off, I'm documenting that here.
