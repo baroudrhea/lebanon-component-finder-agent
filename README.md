@@ -78,3 +78,25 @@ Note: n8n runs inside Docker, so the node can't reach the FastAPI service via lo
 1. Add the node to a workflow
 2. Set up a credential with your Gemini API key and service URL (http://host.docker.internal:8000)
 3. Fill in the Query field (e.g. "LM358 op-amp") and execute
+
+## HW4 — Part C: Workflows
+
+Two workflows in `n8n-workflows/`:
+
+- **`my-workflow.json`** — Simple flow: Manual Trigger → Component Finder Agent. Shows the custom node working standalone.
+- **`component-list-search.json`** — the main one, a Project Parts/BOM Checker. Takes a list of components, checks each against Lebanese electronics availability, and if one isn't found, automatically asks the agent for a common substitute instead of just failing.
+
+Covers: Webhook trigger, HTTP Request (USD→LBP rate from api.frankfurter.app), branching (If), merge, looping (Loop Over Items), filtering, data shaping (Edit Fields + Code nodes), error handling (continue on fail), Respond to Webhook, sticky notes, and credentials stored in n8n (nothing hardcoded).
+
+### Importing and running
+
+1. In n8n, go to **Workflows → Import from File** and select either JSON from `n8n-workflows/`
+2. Make sure the FastAPI service is running (see Part B above) and the credential is set up
+3. For `my-workflow.json`: click **Execute Workflow**
+4. For `component-list-search.json`: activate the workflow, then send a POST request to the webhook path `component-search-v2` with a body like:
+
+   { "components": ["LM358 op-amp", "Arduino Uno", "10k resistor"] }
+
+### Known limitation
+
+The substitute-suggestion branch is implemented and tested, but the agent is accurate enough that it rarely hits its true failure case during normal testing — so this is documented honestly here rather than forced/faked.
